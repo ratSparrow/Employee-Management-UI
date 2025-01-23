@@ -1,0 +1,61 @@
+ /* Style the table container */
+ .table-container {
+    margin: 32px;
+    font-family: 'serif', sans-serif;
+  }
+  
+  .table-container h2 {
+    text-align: center;
+    margin-bottom: 20px;
+    color: #333;
+  }
+  
+  /* Style the table */
+  .custom-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 0 auto;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  
+  /* Table headers */
+  .custom-table th {
+    padding: 12px 15px;
+    text-align: left;
+    font-size: 16px;
+    font-weight: 600;
+    color:rgb(72, 71, 71)
+  }
+  
+  /* Table data cells */
+  .custom-table td {
+    padding: 12px 15px;
+    border-bottom: 1px solid #ddd;
+    text-align: left;
+    font-weight: 100;
+    font-size: 14px;
+    border-bottom: 1px solid rgb(184, 180, 180);
+    border-top: 1px solid rgb(184, 180, 180);
+    background-color: #f1f1f1;
+    color: rgb(104, 102, 102);
+  }
+  
+  /* Striped rows */
+  .custom-table tr:nth-child(even) {
+    background-color: #f2f2f2;
+  }
+  
+  /* Hover effect for rows */
+  .custom-table tr:hover {
+    
+    transition: background-color 0.3s ease;
+  }
+  
+  /* Responsive design */
+  @media (max-width: 768px) {
+    .custom-table th, .custom-table td {
+      padding: 8px;
+      font-size: 14px;
+    }
+}
