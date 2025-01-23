@@ -1,4 +1,4 @@
-import { Button, Checkbox, Col, Row, Typography } from "antd";
+import { Alert, Button, Checkbox, Col, Row, Typography } from "antd";
 import CustomForm from "../components/CustomForm";
 import CustomInput from "../components/CustomInput";
 import { useEffect, useState } from "react";
@@ -13,8 +13,9 @@ const AddNewEmployee = () => {
     const [response, setResponse] = useState(null);
     const [data, setData] = useState({})
     const [error, setError] = useState(null);
-    const [loading, setLoading] = useState(false)
+    const [message, setMessage] = useState('')
     const [status, setStatus] = useState(false)
+    const [loading,setLoading] = useState(false)
 
     //fetch data
     const fetchSingleEmployee = async () => {
@@ -22,7 +23,7 @@ const AddNewEmployee = () => {
             setLoading(true)
             const response = await axios.get(`${API}/employee/${id}`);
             setData(response?.data.data);
-            console.log(response?.data.data)
+            // console.log(response?.data.data)
         } catch (err) {
             setError(err.message);
         } finally {
@@ -42,12 +43,12 @@ const AddNewEmployee = () => {
             status
         }
         // console.log(modifiedData)
-        
-        if(id){
+
+        if (id) {
             try {
                 const res = await axios.patch(`${API}/employee/${id}`, modifiedData);
                 setResponse(res.data);
-                if(res.status === 200){
+                if (res.status === 200) {
                     navigate("/")
                 }
                 console.log(res)
@@ -55,14 +56,13 @@ const AddNewEmployee = () => {
                 setError(err.message);
                 console.log(err)
             }
-        }else{
+        } else {
             try {
                 const res = await axios.post(`${API}/employee/add`, modifiedData);
-                setResponse(res.data);
-                if(res.status === 200){
-                    navigate("/")
-                }
-                console.log(res)
+                setResponse(res.status);
+                setMessage(res.data.data.message)
+               
+                console.log(res.data.data)
             } catch (err) {
                 setError(err.message);
                 console.log(err)
@@ -70,8 +70,8 @@ const AddNewEmployee = () => {
         }
     };
 
-    
-    
+
+
 
     return (
         <div style={{ maxWidth: "700px", margin: "auto" }}>
@@ -79,6 +79,7 @@ const AddNewEmployee = () => {
                 Add Employee
             </Title>
             <div >
+
                 <CustomForm submitHandler={onSubmit}>
                     <div>
                         <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
@@ -153,6 +154,17 @@ const AddNewEmployee = () => {
 
 
             </div>
+
+            {
+                response === 200 && <Alert
+                style={{marginTop:16}}
+                    message="Success Tips"
+                    description={`${message}`}
+                    type="success"
+                    showIcon
+                />
+            }
+            
 
         </div>
     )
