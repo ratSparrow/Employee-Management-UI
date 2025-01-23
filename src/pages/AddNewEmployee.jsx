@@ -1,40 +1,78 @@
 import { Button, Checkbox, Col, Row, Typography } from "antd";
 import CustomForm from "../components/CustomForm";
 import CustomInput from "../components/CustomInput";
-import { useState } from "react";
-import { useParams } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import axios from "axios";
+import { API } from "../utilities/Api";
 const { Title } = Typography;
 
 const AddNewEmployee = () => {
-    const data = [
-        {
-            id: 1,
-            firstName: "Rafiul Alam",
-            lastName: "Tonmoy",
-            email: "mrafiul.alam7@gmail.com",
-            date: "24-01-2025",
-            salary: "40000",
-            status: true
-        }
-    ]
-    const {id} = useParams()
+    const { id } = useParams()
+    const navigate = useNavigate()
+    const [response, setResponse] = useState(null);
+    const [data, setData] = useState({})
+    const [error, setError] = useState(null);
+    const [loading, setLoading] = useState(false)
     const [status, setStatus] = useState(false)
-    const checkHandler = () => {
-        setStatus(true)
-    }
 
+    //fetch data
+    const fetchSingleEmployee = async () => {
+        try {
+            setLoading(true)
+            const response = await axios.get(`${API}/employee/${id}`);
+            setData(response?.data.data);
+            console.log(response?.data.data)
+        } catch (err) {
+            setError(err.message);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    // Fetch data on component mount
+    useEffect(() => {
+        fetchSingleEmployee();
+    }, []);
+
+    // Add Employee
     const onSubmit = async (data) => {
         const modifiedData = {
             ...data,
             status
         }
-        console.log(modifiedData)
+        // console.log(modifiedData)
+        
+        if(id){
+            try {
+                const res = await axios.patch(`${API}/employee/${id}`, modifiedData);
+                setResponse(res.data);
+                if(res.status === 200){
+                    navigate("/")
+                }
+                console.log(res)
+            } catch (err) {
+                setError(err.message);
+                console.log(err)
+            }
+        }else{
+            try {
+                const res = await axios.post(`${API}/employee/add`, modifiedData);
+                setResponse(res.data);
+                if(res.status === 200){
+                    navigate("/")
+                }
+                console.log(res)
+            } catch (err) {
+                setError(err.message);
+                console.log(err)
+            }
+        }
     };
-        const employeeData = data.find(employee=>employee.id == id)
-        // console.log("employeeData", employeeData)
 
     
     
+
     return (
         <div style={{ maxWidth: "700px", margin: "auto" }}>
             <Title level={3} style={{ marginLeft: "-12px" }}>
@@ -48,44 +86,46 @@ const AddNewEmployee = () => {
                                 name="firstName"
                                 label="First Name"
                                 type="text"
-                                value={employeeData?.firstName}
+                                value={data?.firstName}
                                 style={{ width: "70%" }}
                             />
                             <CustomInput
                                 name="lastName"
                                 label="Last Name"
                                 type="string"
-                                value={employeeData?.lastName}
+                                value={data?.lastName}
                                 style={{ width: "70%" }}
                             />
                             <CustomInput
                                 name="email"
                                 label="Email"
                                 type="email"
-                                value={employeeData?.email}
+                                value={data?.email}
                                 style={{ width: "70%" }}
                             />
                             <CustomInput
                                 name="salary"
                                 label="Salary (&#36;)"
                                 type="text"
-                                value={employeeData?.salary}
+                                value={data?.salary}
                                 style={{ width: "70%" }}
                             />
-                            <Col style={{marginLeft:"-12px"}}>
+                            <Col style={{ marginLeft: "-12px" }}>
                                 <CustomInput
                                     name="date"
                                     label="Date"
                                     type="date"
-                                    value={employeeData?.date}
+                                    value={data?.date}
                                     style={{ width: "70%" }}
                                 />
                             </Col>
                             <Col >
                                 <div style={{ marginTop: 26 }}>
                                     <Checkbox
-                                        checked={employeeData?.status}
-                                        onChange={checkHandler}>Is Permanent</Checkbox>
+                                        value={data?.status ? data?.status : status}
+                                        onChange={() => {
+                                            setStatus(true)
+                                        }}>Is Permanent</Checkbox>
                                 </div>
                             </Col>
                         </Row>

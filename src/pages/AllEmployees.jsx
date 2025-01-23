@@ -1,21 +1,48 @@
 
 import { Button, Typography } from "antd";
+import axios from "axios";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { API } from "../utilities/Api";
+import Employee from "./Employee";
 
 const { Title } = Typography;
 
 const AllEmployees = () => {
-    const data = [
-        {
-            id: 1,
-            firstName: "Rafiul Alam",
-            lastName: "Tonmoy",
-            email: "mrafiul.alam7@gmail.com",
-            date: "24-01-2025",
-            salary: "40000",
-            status: true
-        }
-    ]
+    const [data, setData] = useState([])
+    const [error,setError] = useState(null)
+    const [loading,setLoading] = useState(false)
+
+      //fetch data
+  const fetchData = async () => {
+    try {
+      const response = await axios.get(`${API}/employee`); 
+      setData(response.data.data); 
+      console.log(response)
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false); 
+    }
+  };
+
+  // Fetch data on component mount
+  useEffect(() => {
+    fetchData();
+  }, []);
+  
+  const checkingData = () =>{
+    switch (data.length) {
+        case 0:
+            return <tr><td>No Employees</td></tr>
+
+        default:
+            return data?.map((employee, i) => <Employee employee={employee} index={i} key={i}/>)
+    }
+  }
+
+
+
     return (
         <div style={{ margin: 32 }}>
 
@@ -39,24 +66,7 @@ const AllEmployees = () => {
                         </tr>
                     </thead>
                     <tbody>
-                        {data.map((record, i) => (
-                            <tr key={record.id}>
-                                <td>{i + 1}</td>
-                                <td>{record.firstName}</td>
-                                <td>{record.lastName} </td>
-                                <td>{record.email} </td>
-                                <td>{record.date} </td>
-                                <td>{record.salary} </td>
-                                <td>{record.status === true ? "Yes" : "No"} </td>
-                                <td style={{ textAlign: "center" }}>
-                                    <Button type='' style={{ marginRight: 10 }}>
-                                        <Link to={`/employee/add/${record.id}`}>Edit</Link>
-                                    </Button>
-                                    <Button type='' color='' variant='filled'>Delete</Button>
-                                </td>
-
-                            </tr>
-                        ))}
+                        {checkingData()}
                     </tbody>
                 </table>
             </div>
