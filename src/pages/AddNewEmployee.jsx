@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import { Alert, Button, Checkbox, Col, Row, Typography } from "antd";
 import CustomForm from "../components/CustomForm";
 import CustomInput from "../components/CustomInput";
@@ -60,7 +61,7 @@ const AddNewEmployee = () => {
             try {
                 const res = await axios.post(`${API}/employee/add`, modifiedData);
                 setResponse(res.status);
-                setMessage(res.data.data.message)
+                setMessage(res.data.message)
                
                 console.log(res.data.data)
             } catch (err) {
@@ -151,14 +152,12 @@ const AddNewEmployee = () => {
                         </div>
                     </div>
                 </CustomForm>
-
-
             </div>
 
             {
                 response === 200 && <Alert
                 style={{marginTop:16}}
-                    message="Success Tips"
+                    message="Success!"
                     description={`${message}`}
                     type="success"
                     showIcon

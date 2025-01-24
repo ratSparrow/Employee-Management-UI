@@ -1,28 +1,47 @@
+/* eslint-disable no-unused-vars */
 /* eslint-disable react/prop-types */
-import { Button } from "antd"
+import { Button, message, Modal } from "antd"
 import axios from "axios"
 import { useState } from "react"
 import { Link } from "react-router-dom"
 import { API } from "../utilities/Api"
 
 
-const Employee = ({ employee,index }) => {
-        const [error,setError] = useState(null)
-        const [loading,setLoading] = useState(false)
-    const {firstName, lastName, email, date, salary, status} = employee
-    
-      //Delete Employee Data
-  const deleteEmployee = async (id) => {
-    try {
-        setLoading(true)
-        const response = await axios.delete(`${API}/employee/${id}`);
-        console.log(response?.data.data)
-    } catch (err) {
-        setError(err.message);
-    } finally {
-        setLoading(false);
-    }
-};
+const Employee = ({ employee, index }) => {
+    const [error, setError] = useState(null)
+    const [loading, setLoading] = useState(false)
+    const { _id,firstName, lastName, email, date, salary, status } = employee
+    const [isModalVisible, setIsModalVisible] = useState(false);
+
+    // Function to show the modal
+    const showModal = () => {
+        setIsModalVisible(true);
+    };
+
+    // Function to handle delete confirmation
+    const handleDelete = async() => {
+        try {
+            setLoading(true)
+            const response = await axios.delete(`${API}/employee/${_id}`);
+            console.log(response?.data.data)
+
+        } catch (err) {
+            setError(err.message);
+
+        } finally {
+            setLoading(false);
+
+        }
+        message.success("Data deleted successfully!");
+        setIsModalVisible(false);
+    };
+
+    // Function to handle modal cancel
+    const handleCancel = () => {
+        setIsModalVisible(false);
+    };
+
+
     return (
         <>
             <tr>
@@ -37,10 +56,23 @@ const Employee = ({ employee,index }) => {
                     <Button type='' style={{ marginRight: 10 }}>
                         <Link to={`/employee/add/${employee._id}`}>Edit</Link>
                     </Button>
-                    <Button onClick={() => deleteEmployee(employee._id)} type='' color='' variant='filled'>Delete</Button>
+                    <Button onClick={showModal} type='' color='' variant='filled'>Delete</Button>
                 </td>
 
             </tr>
+            <Modal
+                title="Confirm Delete"
+                open={isModalVisible}
+                onOk={handleDelete}
+                onCancel={handleCancel}
+                okText="Delete"
+                okButtonProps={{ danger: true }}
+                cancelText="Cancel"
+            >
+                <p>Are you sure you want to delete this employee?</p>
+            </Modal>
+
+
         </>
     )
 }
