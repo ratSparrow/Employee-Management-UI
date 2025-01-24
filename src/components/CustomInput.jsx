@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 
 import { Input, Typography } from "antd";
 import { Controller, useFormContext } from "react-hook-form";
@@ -11,7 +12,7 @@ const CustomInput = ({
   label,
   defaultValue,
 }) => {
-  const { control, } = useFormContext();
+  const { control} = useFormContext();
   return (
     <>
       <Typography

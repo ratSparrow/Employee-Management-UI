@@ -1,22 +1,25 @@
 /* eslint-disable no-unused-vars */
-import { Alert, Button, Checkbox, Col, Row, Typography } from "antd";
+import { Alert, Button, Checkbox, Col, message, Row, Typography } from "antd";
 import CustomForm from "../components/CustomForm";
 import CustomInput from "../components/CustomInput";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import { API } from "../utilities/Api";
+import { useForm } from "react-hook-form";
 const { Title } = Typography;
 
 const AddNewEmployee = () => {
+    const methods = useForm()
     const { id } = useParams()
     const navigate = useNavigate()
     const [response, setResponse] = useState(null);
     const [data, setData] = useState({})
     const [error, setError] = useState(null);
-    const [message, setMessage] = useState('')
+
     const [status, setStatus] = useState(false)
-    const [loading,setLoading] = useState(false)
+    const [loading, setLoading] = useState(false)
+
 
     //fetch data
     const fetchSingleEmployee = async () => {
@@ -26,10 +29,11 @@ const AddNewEmployee = () => {
             setData(response?.data.data);
             // console.log(response?.data.data)
         } catch (err) {
-            setError(err.message);
+            setError(err.messages);
         } finally {
             setLoading(false);
         }
+
     };
 
     // Fetch data on component mount
@@ -51,26 +55,29 @@ const AddNewEmployee = () => {
                 setResponse(res.data);
                 if (res.status === 200) {
                     navigate("/")
+                    message.success(res.data.message)
                 }
-                console.log(res)
+                // console.log(res)
             } catch (err) {
-                setError(err.message);
+                setError(err.messages);
                 console.log(err)
             }
         } else {
             try {
                 const res = await axios.post(`${API}/employee/add`, modifiedData);
                 setResponse(res.status);
-                setMessage(res.data.message)
-               
-                console.log(res.data.data)
+                if (res.status === 200) {
+                    navigate("/")
+                    message.success(res.data.message)
+                }
+                
+                // console.log(res.data.data)
             } catch (err) {
-                setError(err.message);
+                setError(err.messages);
                 console.log(err)
             }
         }
     };
-
 
 
 
@@ -88,6 +95,7 @@ const AddNewEmployee = () => {
                                 name="firstName"
                                 label="First Name"
                                 type="text"
+                                onChange={(e) => console.log(e.target.value)}
                                 value={data?.firstName}
                                 style={{ width: "70%" }}
                             />
@@ -124,7 +132,7 @@ const AddNewEmployee = () => {
                             <Col >
                                 <div style={{ marginTop: 26 }}>
                                     <Checkbox
-                                        value={data?.status ? data?.status : status}
+                                        checked={status}
                                         onChange={() => {
                                             setStatus(true)
                                         }}>Is Permanent</Checkbox>
@@ -139,6 +147,7 @@ const AddNewEmployee = () => {
                                 style={{ marginTop: 16 }}
                                 htmlType="submit"
                                 type="primary"
+
                             >
                                 Add
                             </Button>
@@ -154,15 +163,6 @@ const AddNewEmployee = () => {
                 </CustomForm>
             </div>
 
-            {
-                response === 200 && <Alert
-                style={{marginTop:16}}
-                    message="Success!"
-                    description={`${message}`}
-                    type="success"
-                    showIcon
-                />
-            }
             
 
         </div>
